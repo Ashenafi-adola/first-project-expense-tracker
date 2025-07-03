@@ -1,0 +1,54 @@
+{
+  "Expenses": [
+    {
+      "Amount": 400,
+      "Cathagory": "transport",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 50,
+      "Cathagory": "taxi",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 40,
+      "Cathagory": "taxi",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 500,
+      "Cathagory": "food",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 800,
+      "Cathagory": "food",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 400,
+      "Cathagory": "food",
+      "Date": "2025-07-02"
+    },
+    {
+      "Amount": 500,
+      "Cathagory": "transport",
+      "Date": "2025-07-03"
+    },
+    {
+      "Amount": 530,
+      "Cathagory": "food",
+      "Date": "2025-07-03"
+    },
+    {
+      "Amount": 40,
+      "Cathagory": "mobile card",
+      "Date": "2025-07-03"
+    },
+    {
+      "Amount": 400,
+      "Cathagory": "clothes",
+      "Date": "2025-07-03"
+    }
+  ]
+}
