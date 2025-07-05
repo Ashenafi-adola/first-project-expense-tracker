@@ -1,48 +1,54 @@
 import json
 from datetime import date
 
-#declearing lists and dictionaries for latter use
-diction = {}
-records = []
-expns = {}
-cats = ["Amount", "Cathagory", "Date"]
+#declearing for latter use
 
+records = []
+cats = ["Amount", "Cathagory", "Date"]
+#Function Deffinations
+#Function to add new expense
 def addExpense():
+    diction = {}  #to temporarily store the input data
+    #loop through the cats list to recieve input data in to diction dictionary
     for det in cats:
         if det == "Date":
-            diction[det] = str(date.today())
+            diction[det] = str(date.today()) 
         elif det == "Amount":
-            diction[det] = int(input("Enter your " + det + " of expense: "))
+            try:
+                diction[det] = int(input("Enter your " + det + " of expense: ")) #accept integer data type otherwise return ValueError
+            except ValueError:
+                print("please Enter a valid value")
+                break
         else:
             diction[det] = input("Enter your " + det + " of expense: ")
-    try:
+    
+    try: #check weather the file to which the data is stored exist or not 
         with open("Expenses.json", "x") as file:
             records.append(diction)
-            expns["Expenses"] = records
-            json.dump(expns, file, indent=2)
+            json.dump(records, file, indent=2)
     except FileExistsError:
         with open("Expenses.json") as file:
-            expns = json.load(file)
-            records = list(expns["Expenses"])
-            records.append(diction)
-            expns["Expenses"] = records
+            records = json.load(file)
+            if diction != {}:
+                records.append(diction)
         with open("Expenses.json", "w") as file:
-            json.dump(expns, file, indent=2)
+            json.dump(records, file, indent=2)
+#Function to display all stored Expenses      
 def viewExpenses():
     with open("Expenses.json") as file:
-        view = json.load(file)
+        records = json.load(file)
         print(44 * "_")
         print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
-        for i in view["Expenses"]:
+        print("|" + 42*"_" + "|")
+        for i in records:
             print("| %-8s| %-14s| %-14s |" % (i["Amount"], i["Cathagory"], i["Date"]))
         print("|" + 42 * "_" + "|")
-
+#Function which returns the Expenses stored in the file as list
 def fileLoader():
     with open("Expenses.json") as file:
-        filt = json.load(file)
-        lists = filt["Expenses"]
-    return lists
-
+        records = json.load(file)
+    return records
+#Function which filter the catagory of the Expenses stored it takes one cathagory at a time
 def CathagoryFilterer(key):
     filtCathagory = []
     for a in fileLoader():
@@ -53,27 +59,29 @@ def CathagoryFilterer(key):
             for a in range(n - 1):
                 filtCathagory.remove(i)
     return filtCathagory
-
+#Function which group all Expenses with the same cathagory 
 def FilterByCathagory():
     print(44 * "_")
+    print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
     for i in CathagoryFilterer("Cathagory"):
         print("|_______________ " + i + "__________")
         for a in fileLoader():
             if a["Cathagory"] == i:
                 print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Cathagory"], a["Date"]))
     print("|" + 42 * "_" + "|")
-
+#Function which group all Expenses with the same date 
 def FilterByDate():
     print(44 * "_")
+    print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
     for i in CathagoryFilterer("Date"):
-        print("|_______________ " + i + "__________")
+        print("|_____________" + i + "__________")
         for a in fileLoader():
             if a["Date"] == i:
                 print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Cathagory"], a["Date"]))
     print("|" + 42 * "_" + "|")
-    
+#Function to show summary report of Expenses
 def SummaryReport():
-    print("Summary report from " + fileLoader()[0]["Date"] + " to " + fileLoader()[len(fileLoader()) - 1]["Date"])
+    print("Summary report from day " + fileLoader()[0]["Date"] + " to " + fileLoader()[len(fileLoader()) - 1]["Date"])
     for i in CathagoryFilterer("Cathagory"):
         sum = 0
         for a in fileLoader():
@@ -86,26 +94,28 @@ def SummaryReport():
     print(
         "Your overall Exprenditure is " + str(total) + " from " + fileLoader()[0]["Date"] + " to " + fileLoader()[len(fileLoader()) - 1]["Date"])
 while True:
-    print("|======Welcome to Expense Tracker!=======")
-    print("|        Main menu")
-    print("| 1. Add Expense")
-    print("| 2. View Expenses")
-    print("| 3. Filter by Category")
-    print("| 4. Filter by Date")
-    print("| 5. Summary Report")
-    print("| 6. Save and Exit")
-    inp = int(input("Enter your choice: "))
-    if inp == 1:
+    print("__________________________________________")
+    print("|======Welcome to Expense Tracker!=======|")
+    print("|        Main menu                       |")
+    print("| 1. Add Expense                         |")
+    print("| 2. View Expenses                       |")
+    print("| 3. Filter by Category                  |")
+    print("| 4. Filter by Date                      |")
+    print("| 5. Summary Report                      |")
+    print("| 6. Save and Exit                       |")
+    print("|________________________________________|")
+    inp = (input("Enter your choice: "))
+    if inp == '1':
         addExpense()
-    elif inp == 2:
+    elif inp == '2':
         viewExpenses()
-    elif inp == 3:
+    elif inp == '3':
         FilterByCathagory()
-    elif inp == 4:
+    elif inp == '4':
         FilterByDate()
-    elif inp == 5:
+    elif inp == '5':
         SummaryReport()
-    elif inp == 6:
+    elif inp == '6':
         print("Good bye!")
         break
     else:
