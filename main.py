@@ -1,39 +1,31 @@
+#Import modules that are used to work with
 import json
 from datetime import date
-
-#declearing for latter use
+#declearing lists for latter use
 
 records = []
-cats = ["Amount", "Cathagory", "Date"]
 #Function Deffinations
-#Function to add new expense
-def addExpense():
-    diction = {}  #to temporarily store the input data
-    #loop through the cats list to recieve input data in to diction dictionary
-    for det in cats:
-        if det == "Date":
-            diction[det] = str(date.today()) 
-        elif det == "Amount":
-            try:
-                diction[det] = int(input("Enter your " + det + " of expense: ")) #accept integer data type otherwise return ValueError
-            except ValueError:
-                print("please Enter a valid value")
-                break
-        else:
-            diction[det] = input("Enter your " + det + " of expense: ")
-    
-    try: #check weather the file to which the data is stored exist or not 
+def addExpense():   #Function to add new expense
+    diction = {}  # A dictionary to temporarily store the input data
+    diction["Date"] = str(date.today())
+    diction["Cathagory"] = input("Enter your Cathagory of expense: ")
+    try:
+        diction["Amount"] = int(input("Enter your Amount of expense: ")) #accept integer data type otherwise return ValueError
+    except ValueError:
+        diction["Amount"] = None
+        print("please Enter a valid value")
+    try: #check weather the file to which the data is stored exist or not
         with open("Expenses.json", "x") as file:
             records.append(diction)
             json.dump(records, file, indent=2)
     except FileExistsError:
         with open("Expenses.json") as file:
             records = json.load(file)
-            if diction != {}:
+            if diction["Amount"] != None:
                 records.append(diction)
         with open("Expenses.json", "w") as file:
             json.dump(records, file, indent=2)
-#Function to display all stored Expenses      
+#Function to display all stored Expenses
 def viewExpenses():
     with open("Expenses.json") as file:
         records = json.load(file)
@@ -59,7 +51,7 @@ def CathagoryFilterer(key):
             for a in range(n - 1):
                 filtCathagory.remove(i)
     return filtCathagory
-#Function which group all Expenses with the same cathagory 
+#Function which group all Expenses with the same cathagory
 def FilterByCathagory():
     print(44 * "_")
     print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
@@ -69,7 +61,7 @@ def FilterByCathagory():
             if a["Cathagory"] == i:
                 print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Cathagory"], a["Date"]))
     print("|" + 42 * "_" + "|")
-#Function which group all Expenses with the same date 
+#Function which group all Expenses with the same date
 def FilterByDate():
     print(44 * "_")
     print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
