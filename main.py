@@ -2,48 +2,35 @@
 import json
 from datetime import date
 #declearing lists for latter use
+FILENAME = "Expenses.json"
 
-records = []
 #Function Deffinations
-def addExpense():   #Function to add new expense
+def addExpense(records):   #Function to add new expense
     diction = {}  # A dictionary to temporarily store the input data
     diction["Date"] = str(date.today())
-    diction["Cathagory"] = input("Enter your Cathagory of expense: ")
+    diction["Category"] = input("Enter your Category of expense: ")
     try:
         diction["Amount"] = int(input("Enter your Amount of expense: ")) #accept integer data type otherwise return ValueError
     except ValueError:
         diction["Amount"] = None
         print("please Enter a valid value")
-    try: #check weather the file to which the data is stored exist or not
-        with open("Expenses.json", "x") as file:
-            records.append(diction)
-            json.dump(records, file, indent=2)
-    except FileExistsError:
-        with open("Expenses.json") as file:
-            records = json.load(file)
-            if diction["Amount"] != None:
-                records.append(diction)
-        with open("Expenses.json", "w") as file:
-            json.dump(records, file, indent=2)
+    if diction["Amount"] != None:
+        records.append(diction)
+    else:
+        print("Add expense Faild!")
 #Function to display all stored Expenses
-def viewExpenses():
-    with open("Expenses.json") as file:
-        records = json.load(file)
-        print(44 * "_")
-        print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
-        print("|" + 42*"_" + "|")
-        for i in records:
-            print("| %-8s| %-14s| %-14s |" % (i["Amount"], i["Cathagory"], i["Date"]))
-        print("|" + 42 * "_" + "|")
-#Function which returns the Expenses stored in the file as list
-def fileLoader():
-    with open("Expenses.json") as file:
-        records = json.load(file)
-    return records
+def viewExpenses(records):
+    print(44 * "_")
+    print("| %-8s| %-14s| %-14s |" % ("Amount", "Catgory", "Date"))
+    print("|" + 42*"_" + "|")
+    for i in records:
+        print("| %-8s| %-14s| %-14s |" % (i["Amount"], i["Category"], i["Date"]))
+    print("|" + 42 * "_" + "|")
+
 #Function which filter the catagory of the Expenses stored it takes one cathagory at a time
-def CathagoryFilterer(key):
+def CathagoryFilterer(key,records):
     filtCathagory = []
-    for a in fileLoader():
+    for a in records:
         filtCathagory.append(a[key])
     for i in filtCathagory:
         n = filtCathagory.count(i)
@@ -52,39 +39,45 @@ def CathagoryFilterer(key):
                 filtCathagory.remove(i)
     return filtCathagory
 #Function which group all Expenses with the same cathagory
-def FilterByCathagory():
+def FilterByCathagory(records):
     print(44 * "_")
-    print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
-    for i in CathagoryFilterer("Cathagory"):
+    print("| %-8s| %-14s| %-14s |" % ("Amount", "Category", "Date"))
+    for i in CathagoryFilterer("Category", records):
         print("|_______________ " + i + "__________")
-        for a in fileLoader():
-            if a["Cathagory"] == i:
-                print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Cathagory"], a["Date"]))
+        for a in records:
+            if a["Category"] == i:
+                print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Category"], a["Date"]))
     print("|" + 42 * "_" + "|")
 #Function which group all Expenses with the same date
-def FilterByDate():
+def FilterByDate(records):
     print(44 * "_")
-    print("| %-8s| %-14s| %-14s |" % ("Amount", "Cathagory", "Date"))
-    for i in CathagoryFilterer("Date"):
+    print("| %-8s| %-14s| %-14s |" % ("Amount", "Category", "Date"))
+    for i in CathagoryFilterer("Date", records):
         print("|_____________" + i + "__________")
-        for a in fileLoader():
+        for a in records:
             if a["Date"] == i:
-                print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Cathagory"], a["Date"]))
+                print("| %-8s| %-14s| %-14s |" % (a["Amount"], a["Category"], a["Date"]))
     print("|" + 42 * "_" + "|")
 #Function to show summary report of Expenses
-def SummaryReport():
-    print("Summary report from day " + fileLoader()[0]["Date"] + " to " + fileLoader()[len(fileLoader()) - 1]["Date"])
-    for i in CathagoryFilterer("Cathagory"):
+def SummaryReport(records):
+    print("Summary report from day " + records[0]["Date"] + " to " + records[len(records) - 1]["Date"])
+    for i in CathagoryFilterer("Category"):
         sum = 0
-        for a in fileLoader():
-            if a["Cathagory"] == i:
+        for a in records:
+            if a["Category"] == i:
                 sum += a["Amount"]
         print("Your total Expenditure for " + i + " is " + str(sum))
     total = 0
-    for a in fileLoader():
+    for a in records:
         total += a["Amount"]
     print(
-        "Your overall Exprenditure is " + str(total) + " from " + fileLoader()[0]["Date"] + " to " + fileLoader()[len(fileLoader()) - 1]["Date"])
+        "Your overall Exprenditure is " + str(total) + " from " + records[0]["Date"] + " to " + records[len(records) - 1]["Date"])
+
+try:
+    file = open(FILENAME, 'r')
+    records = json.load(file)
+except FileNotFoundError:
+    records = []
 while True:
     print("__________________________________________")
     print("|======Welcome to Expense Tracker!=======|")
@@ -98,16 +91,18 @@ while True:
     print("|________________________________________|")
     inp = (input("Enter your choice: "))
     if inp == '1':
-        addExpense()
+        addExpense(records)
     elif inp == '2':
-        viewExpenses()
+        viewExpenses(records)
     elif inp == '3':
-        FilterByCathagory()
+        FilterByCathagory(records)
     elif inp == '4':
-        FilterByDate()
+        FilterByDate(records)
     elif inp == '5':
-        SummaryReport()
+        SummaryReport(records)
     elif inp == '6':
+        with open(FILENAME,'w') as f:
+            json.dump(records,f, indent=4)
         print("Good bye!")
         break
     else:
